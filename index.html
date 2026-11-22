@@ -24,6 +24,7 @@
   *{ box-sizing: border-box; }
   html, body{
     height: 100%;
+    width: 100%;
     margin: 0;
     background: var(--bg);
     overflow: hidden;
@@ -37,6 +38,23 @@
     user-select: none;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Force a landscape layout even if the OS keeps the device/browser
+     in portrait (orientation lock only works once in true fullscreen
+     on some browsers, so this CSS fallback guarantees horizontal
+     display everywhere, including a plain browser tab). */
+  @media screen and (orientation: portrait){
+    html{
+      width: 100vh;
+      height: 100vw;
+      transform: rotate(90deg);
+      transform-origin: top left;
+      position: absolute;
+      top: 0;
+      left: 100%;
+      overflow: hidden;
+    }
   }
 
   .clock{

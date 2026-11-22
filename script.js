@@ -168,8 +168,33 @@
     if (document.visibilityState === 'visible') requestWake();
   });
 
-  // tap to toggle seconds label visibility (optional nicety)
+  // Fullscreen + landscape lock. Browsers only allow entering fullscreen
+  // and locking orientation from inside a real user gesture, so this runs
+  // on the first tap/click (and again on every tap, harmlessly, in case
+  // the user left fullscreen e.g. via the back gesture).
+  function goFullscreenLandscape(){
+    var el = document.documentElement;
+    var request = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    var p;
+    if (!document.fullscreenElement && request){
+      p = request.call(el);
+    } else {
+      p = Promise.resolve();
+    }
+    (p || Promise.resolve()).then(function(){
+      if (screen.orientation && screen.orientation.lock){
+        screen.orientation.lock('landscape').catch(function(){});
+      }
+    }).catch(function(){});
+  }
+
+  // try right away (works automatically once installed/launched as a
+  // standalone PWA on Android; silently no-ops otherwise until a tap)
+  goFullscreenLandscape();
+
+  // tap to go fullscreen/landscape and toggle the seconds label
   document.body.addEventListener('click', function(){
+    goFullscreenLandscape();
     secondsLabel.style.display = (secondsLabel.style.display === 'none') ? 'flex' : 'none';
   });
 
